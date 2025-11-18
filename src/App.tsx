@@ -36,15 +36,22 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     let result = [...todos];
-    if (status === 'completed') result = result.filter(todo => todo.completed);
-    if (status === 'active') result = result.filter(todo => !todo.completed);
-    if (search.trim()) {
-      result = result.filter(todo => todo.title.toLowerCase().includes(search.toLowerCase()));
+
+    if (status === 'completed') {
+      result = result.filter(todo => todo.completed);
+    } else if (status === 'active') {
+      result = result.filter(todo => !todo.completed);
     }
+
+    if (search.trim()) {
+      const lowerSearch = search.toLowerCase();
+      result = result.filter(todo => todo.title.toLowerCase().includes(lowerSearch));
+    }
+
     setFilteredTodos(result);
   }, [status, search, todos]);
 
-  const openTodo = async (todo: Todo) => {
+  const handleOpenTodo = async (todo: Todo) => {
     setSelectedTodo(todo);
     setIsUserLoading(true);
     const user = await getUser(todo.userId);
@@ -52,7 +59,7 @@ export const App: React.FC = () => {
     setIsUserLoading(false);
   };
 
-  const closeModal = () => {
+  const handleCloseModal = () => {
     setSelectedTodo(null);
     setSelectedUser(null);
   };
@@ -79,7 +86,7 @@ export const App: React.FC = () => {
               <TodoList
                 todos={filteredTodos}
                 selectedTodo={selectedTodo}
-                onSelect={openTodo}
+                onSelect={handleOpenTodo}
               />
             </div>
           </div>
@@ -91,7 +98,7 @@ export const App: React.FC = () => {
         user={selectedUser}
         isOpen={!!selectedTodo}
         loading={isUserLoading}
-        onClose={closeModal}
+        onClose={handleCloseModal}
       />
     </>
   );
